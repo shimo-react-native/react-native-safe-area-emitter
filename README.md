@@ -1,6 +1,6 @@
 # react-native-safe-area
 
-Safe area emitter of iOS for react-native
+Safe area event emitter of iOS for react-native
 
 ## Install
 
@@ -10,6 +10,14 @@ react-native link react-native-safe-area
 ```
 
 ## Usage
+
+* `getSafeArea(reactTag)` get fafe area for a view
+* `getRootSafeArea()` get safe area for root view
+* `addListener(eventType, listener, context)` add event listener
+* `addSafeAreaListener(listener, context)` add event listener for all view
+* `addRootSafeAreaListener(listener, context)` add event listener for root view
+
+## Example
 
 ```js
 import {
