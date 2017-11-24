@@ -1,0 +1,27 @@
+{
+  "name": "react-native-safe-area-emitter",
+  "version": "0.1.0",
+  "description": "Safe area emitter of iOS for react-native",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shimohq/react-native-safe-area-emitter.git"
+  },
+  "keywords": [
+    "safe",
+    "area",
+    "emitter",
+    "react",
+    "native",
+    "react-native"
+  ],
+  "author": "Bell",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shimohq/react-native-safe-area-emitter/issues"
+  },
+  "homepage": "https://github.com/shimohq/react-native-safe-area-emitter#readme"
+}
