@@ -1,12 +1,12 @@
-# react-native-safe-area
+# react-native-safe-area-emitter
 
 Safe area event emitter of iOS for react-native
 
 ## Install
 
 ```sh
-npm i react-native-safe-area
-react-native link react-native-safe-area
+npm i react-native-safe-area-emitter
+react-native link react-native-safe-area-emitter
 ```
 
 ## Usage
