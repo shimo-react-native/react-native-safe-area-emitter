@@ -11,6 +11,12 @@ react-native link react-native-safe-area-emitter
 
 ## Usage
 
+### Constants
+
+* `rootSafeArea` get initialized safe area for root view
+
+### Method
+
 * `getSafeArea(reactTag)` get fafe area for a view
 * `getRootSafeArea()` get safe area for root view
 * `addListener(eventType, listener, context)` add event listener
@@ -29,6 +35,7 @@ export default class App extends Component<{}> {
 
   constructor(props) {
     super(props);
+    console.log('SafeAreaExample', 'rootSafeArea', RNSafeArea.rootSafeArea);
     RNSafeArea.getRootSafeArea().then((result) => {
       console.log('SafeAreaExample', 'getRootSafeArea', result);
     });

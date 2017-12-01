@@ -7,13 +7,13 @@ import { NativeModules, NativeEventEmitter } from 'react-native';
 
 const { RNSafeArea } = NativeModules;
 const safeAreaEventEmitter = RNSafeArea && new NativeEventEmitter(RNSafeArea);
+const rootSafeArea = RNSafeArea ? RNSafeArea.rootSafeArea : {top: 0, left: 0, bottom: 0, right: 0}
 
 function getRootSafeArea() {
   return RNSafeArea && RNSafeArea.getRootSafeArea && RNSafeArea.getRootSafeArea();
 }
 
 function getSafeArea(reactTag) {
-  console.log('SafeArea', reactTag, RNSafeArea.getSafeArea);
   return RNSafeArea && RNSafeArea.getSafeArea && RNSafeArea.getSafeArea(reactTag);
 }
 
@@ -30,6 +30,7 @@ function addRootSafeAreaListener(listener: Function, context: ?Object): EmitterS
 }
 
 export default {
+  rootSafeArea,
   getSafeArea,
   getRootSafeArea,
   addListener,

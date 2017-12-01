@@ -24,6 +24,8 @@ static NSString *const RNRootSafeAreaEventName = @"RootSafeAreaEvent";
     BOOL _listenSafeArea;
 }
 
+@property (nonatomic, strong) UIView *rootView;
+
 @end
 
 @implementation RNSafeArea
@@ -52,15 +54,7 @@ RCT_REMAP_METHOD(getRootSafeArea,
                  getRootSafeAreaWithResolver
                  : (RCTPromiseResolveBlock)resolve rejecter
                  : (RCTPromiseRejectBlock)reject) {
-    UIView *rootView = nil;
-    UIWindow *window = RCTSharedApplication().keyWindow;
-    if (window) {
-        UIViewController *rootViewController = window.rootViewController;
-        if (rootViewController) {
-            rootView = rootViewController.view;
-        }
-    }
-    resolve([self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:rootView]]);
+    resolve([self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:self.rootView]]);
 }
 
 RCT_REMAP_METHOD(getSafeArea,
@@ -70,6 +64,10 @@ RCT_REMAP_METHOD(getSafeArea,
                  : (RCTPromiseRejectBlock)reject) {
     UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
     resolve([self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:view]]);
+}
+
+- (NSDictionary *)constantsToExport {
+    return @{ @"rootSafeArea": [self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:self.rootView]] };
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -124,6 +122,21 @@ RCT_REMAP_METHOD(getSafeArea,
                                body:safeAreaContainer];
         }
     }
+}
+
+#pragma mark - Getter
+
+- (UIView *)rootView {
+    if (!_rootView) {
+        UIWindow *window = RCTSharedApplication().keyWindow;
+        if (window) {
+            UIViewController *rootViewController = window.rootViewController;
+            if (rootViewController) {
+                _rootView = rootViewController.view;
+            }
+        }
+    }
+    return _rootView;
 }
 
 #pragma mark - Private
