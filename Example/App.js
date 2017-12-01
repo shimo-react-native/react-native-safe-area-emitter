@@ -22,10 +22,11 @@ const instructions = Platform.select({
   'Shake or press menu button for dev menu',
 });
 
-export default class App extends Component<{}> {
+export default class App extends Component {
 
   constructor(props) {
     super(props);
+    console.log('SafeAreaExample', 'rootSafeArea', RNSafeArea.rootSafeArea);
     RNSafeArea.getRootSafeArea().then((result) => {
       console.log('SafeAreaExample', 'getRootSafeArea', result);
     });
