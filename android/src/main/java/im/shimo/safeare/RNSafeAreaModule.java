@@ -3,7 +3,6 @@ package im.shimo.safeare;
 
 
 import android.content.res.Resources;
-import android.os.Build;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -14,15 +13,13 @@ import com.facebook.react.bridge.ReactMethod;
  * 此方法调用后 应用为全屏(NavigationBar还是存在)，透明状态栏
  */
 public class RNSafeAreaModule extends ReactContextBaseJavaModule {
-    private static int STATUS_BAR_HEIGHT = 0;
+    private static int mNavigationBarHeight = 0;
 
     static {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Resources resources = Resources.getSystem();
-            int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                STATUS_BAR_HEIGHT = resources.getDimensionPixelSize(resourceId);
-            }
+        Resources resources = Resources.getSystem();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            mNavigationBarHeight = resources.getDimensionPixelSize(resourceId);
         }
     }
 
@@ -37,7 +34,7 @@ public class RNSafeAreaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public int getRootSafeArea() {
-        return STATUS_BAR_HEIGHT;
+        return mNavigationBarHeight;
     }
 
 }
