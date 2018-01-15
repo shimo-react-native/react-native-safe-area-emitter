@@ -52,6 +52,8 @@ public class RNSafeAreaModule extends ReactContextBaseJavaModule {
         final Map<String, Object> constants = new HashMap<>();
         constants.put("top", mStatusBarHeight);
         constants.put("bottom", mNavigationBarHeight);
+        constants.put("left", 0);
+        constants.put("bottom", 0);
         return constants;
     }
 
