@@ -12,6 +12,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RNSafeAreaModule extends ReactContextBaseJavaModule {
     private static int mNavigationBarHeight = 0;
     private static int mStatusBarHeight = 25;
@@ -42,6 +45,16 @@ public class RNSafeAreaModule extends ReactContextBaseJavaModule {
         result.putInt("left", 0);
         result.putInt("right", 0);
         promise.resolve(result);
+    }
+
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+        constants.put("top", mStatusBarHeight);
+        constants.put("bottom", mNavigationBarHeight);
+        constants.put("left", 0);
+        constants.put("right", 0);
+        return constants;
     }
 
 }
