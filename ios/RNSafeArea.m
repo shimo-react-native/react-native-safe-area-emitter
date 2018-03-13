@@ -19,9 +19,10 @@ static NSString *const RNSafeAreaEventName = @"SafeAreaEvent";
 static NSString *const RNRootSafeAreaEventName = @"RootSafeAreaEvent";
 
 @interface RNSafeArea () {
-    BOOL _hasListeners;
     BOOL _listenRootSafeArea;
     BOOL _listenSafeArea;
+    CGFloat _statusBarHeight;
+    UIEdgeInsets _rootSafeAreaInsets;
 }
 
 @property (nonatomic, strong) UIView *rootView;
@@ -32,18 +33,18 @@ static NSString *const RNRootSafeAreaEventName = @"RootSafeAreaEvent";
 
 RCT_EXPORT_MODULE();
 
-- (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-}
-
-- (instancetype)init {
-    if (self = [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(safeAreaInsetsDidChange:)
-                                                     name:RNSafeAreaInsetsDidChange
-                                                   object:nil];
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _statusBarHeight = 0;
+        _rootSafeAreaInsets = UIEdgeInsetsZero;
     }
     return self;
+}
+
+- (dispatch_queue_t)methodQueue {
+    return dispatch_get_main_queue();
 }
 
 - (void)dealloc {
@@ -54,7 +55,13 @@ RCT_REMAP_METHOD(getRootSafeArea,
                  getRootSafeAreaWithResolver
                  : (RCTPromiseResolveBlock)resolve rejecter
                  : (RCTPromiseRejectBlock)reject) {
-    resolve([self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:self.rootView]]);
+    UIEdgeInsets safeAreaInsets;
+    if (@available(iOS 11.0, *)) {
+        safeAreaInsets = [self getSafeAreaInsetsForView:self.rootView];
+    } else {
+        safeAreaInsets = UIEdgeInsetsMake(CGRectGetHeight([UIApplication sharedApplication].statusBarFrame), 0, 0, 0);
+    }
+    resolve([self getSafeAreaFromInsets:safeAreaInsets]);
 }
 
 RCT_REMAP_METHOD(getSafeArea,
@@ -67,7 +74,7 @@ RCT_REMAP_METHOD(getSafeArea,
 }
 
 - (NSDictionary *)constantsToExport {
-    return @{ @"rootSafeArea": [self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:self.rootView]] };
+    return @{@"rootSafeArea": [self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:self.rootView]]};
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -75,52 +82,68 @@ RCT_REMAP_METHOD(getSafeArea,
 }
 
 - (void)startObserving {
-    _hasListeners = YES;
+    _rootSafeAreaInsets = [self getSafeAreaInsetsForView:self.rootView];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(safeAreaInsetsDidChange:)
+                                                 name:RNSafeAreaInsetsDidChange
+                                               object:nil];
+    if (@available(iOS 11.0, *)) {
+        // use safe area
+    } else {
+        _statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidChangeStatusBarFrame:)
+                                                     name:UIApplicationDidChangeStatusBarFrameNotification
+                                                   object:nil];
+    }
 }
 
 - (void)stopObserving {
-    _hasListeners = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)addListener:(NSString *)eventName {
     [super addListener:eventName];
-    if (eventName) {
-        if ([eventName isEqualToString:RNSafeAreaEventName]) {
-            _listenSafeArea = true;
-        } else if ([eventName isEqualToString:RNRootSafeAreaEventName]) {
-            _listenRootSafeArea = true;
-        }
+    if ([eventName isEqualToString:RNSafeAreaEventName]) {
+        _listenSafeArea = true;
+    } else if ([eventName isEqualToString:RNRootSafeAreaEventName]) {
+        _listenRootSafeArea = true;
     }
 }
 
-- (void)removeListeners:(NSInteger)count {
+- (void)removeListeners:(double)count {
     [super removeListeners:count];
 }
 
 #pragma mark - Notification
 
+- (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification {
+    // time delay is must, or statusBarFrame will be old
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+        [self sendRootSafeAreaEvent];
+    });
+}
+
 - (void)safeAreaInsetsDidChange:(NSNotification *)notification {
-    if (_hasListeners) {
-        UIView *view = (UIView *)notification.object;
+    UIView *view = (UIView *)notification.object;
+    if ([view isKindOfClass:[RCTRootView class]] && _listenRootSafeArea) {
+        _rootSafeAreaInsets = [self getSafeAreaInsetsForView:view];
+        [self sendRootSafeAreaEvent];
+    }
+    if (_listenSafeArea) {
         UIEdgeInsets safeAreaInsets = [self getSafeAreaInsetsForView:view];
         NSDictionary *safeArea = [self getSafeAreaFromInsets:safeAreaInsets];
-
-        if ([view isKindOfClass:[RCTRootView class]] && _listenRootSafeArea) {
-            [self sendEventWithName:RNRootSafeAreaEventName
-                               body:safeArea];
+        NSNumber *reactTag = view.reactTag;
+        if (!reactTag) {
+            reactTag = @0;
         }
-        if (_listenSafeArea) {
-            NSNumber *reactTag = view.reactTag;
-            if (!reactTag) {
-                reactTag = @0;
-            }
-            NSDictionary *safeAreaContainer = @{
-                @"reactTag": reactTag,
-                @"safeArea": safeArea
-            };
-            [self sendEventWithName:RNSafeAreaEventName
-                               body:safeAreaContainer];
-        }
+        NSDictionary *safeAreaContainer = @{
+                                            @"reactTag": reactTag,
+                                            @"safeArea": safeArea
+                                            };
+        [self sendEventWithName:RNSafeAreaEventName
+                           body:safeAreaContainer];
     }
 }
 
@@ -140,6 +163,17 @@ RCT_REMAP_METHOD(getSafeArea,
 }
 
 #pragma mark - Private
+
+- (void)sendRootSafeAreaEvent {
+    UIEdgeInsets safeAreaInsets;
+    if (@available(iOS 11.0, *)) {
+        safeAreaInsets = _rootSafeAreaInsets;
+    } else {
+        safeAreaInsets = UIEdgeInsetsMake(_statusBarHeight, 0, 0, 0);
+    }
+    [self sendEventWithName:RNRootSafeAreaEventName
+                       body:[self getSafeAreaFromInsets:safeAreaInsets]];
+}
 
 - (UIEdgeInsets)getSafeAreaInsetsForView:(UIView *)view {
     UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
