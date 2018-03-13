@@ -39,23 +39,23 @@ public class RNSafeAreaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getRootSafeArea(Promise promise) {
-        WritableMap result = Arguments.createMap();
-        result.putInt("top", mStatusBarHeight);
-        result.putInt("bottom", 0);
-        result.putInt("left", 0);
-        result.putInt("right", 0);
-        promise.resolve(result);
+        promise.resolve(getRootSafeArea());
     }
 
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("top", mStatusBarHeight);
-        constants.put("bottom", 0);
-        constants.put("left", 0);
-        constants.put("right", 0);
+        constants.put("rootSafeArea", getRootSafeArea());
         return constants;
     }
 
+    private WritableMap getRootSafeArea() {
+        WritableMap result = Arguments.createMap();
+        result.putInt("top", mStatusBarHeight);
+        result.putInt("bottom", 0);
+        result.putInt("left", 0);
+        result.putInt("right", 0);
+        return result;
+    }
 }
 
