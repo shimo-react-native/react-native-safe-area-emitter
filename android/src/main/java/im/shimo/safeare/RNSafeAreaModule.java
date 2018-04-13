@@ -24,11 +24,14 @@ public class RNSafeAreaModule extends ReactContextBaseJavaModule {
         Resources resources = reactContext.getResources();
         int bottomId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (bottomId > 0) {
-            mNavigationBarHeight = resources.getDimensionPixelSize(bottomId);
+          int height = resources.getDimensionPixelSize(bottomId);
+          mNavigationBarHeight = (int) ( height / DisplayMetricsHolder.getScreenDisplayMetrics().density);
         }
         int topId = resources.getIdentifier("status_bar_height", "dimen", "android");
         if (topId > 0) {
             mStatusBarHeight = resources.getDimensionPixelSize(topId);
+          int height = resources.getDimensionPixelSize(topId);
+          mStatusBarHeight = (int) ( height / DisplayMetricsHolder.getScreenDisplayMetrics().density);
         }
     }
 
