@@ -37,7 +37,7 @@ RCT_EXPORT_MODULE();
 {
     self = [super init];
     if (self) {
-        _statusBarHeight = 0;
+        _statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);;
         _rootSafeAreaInsets = UIEdgeInsetsZero;
     }
     return self;
@@ -180,6 +180,8 @@ RCT_REMAP_METHOD(getSafeArea,
     if (view) {
         if (@available(iOS 11.0, *)) {
             safeAreaInsets = view.safeAreaInsets;
+        } else {
+            safeAreaInsets = UIEdgeInsetsMake(_statusBarHeight, 0, 0, 0);
         }
     }
     return safeAreaInsets;
