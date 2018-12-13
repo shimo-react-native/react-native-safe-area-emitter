@@ -73,6 +73,11 @@ RCT_REMAP_METHOD(getSafeArea,
     resolve([self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:view]]);
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 - (NSDictionary *)constantsToExport {
     return @{@"rootSafeArea": [self getSafeAreaFromInsets:[self getSafeAreaInsetsForView:self.rootView]]};
 }

@@ -3,7 +3,7 @@ import { NativeModules, NativeEventEmitter } from 'react-native';
 const { RNSafeArea } = NativeModules;
 
 const safeAreaEventEmitter = new NativeEventEmitter(RNSafeArea);
-const rootSafeArea = RNSafeArea.rootSafeArea || { top: 0, left: 0, bottom: 0, right: 0 };
+var rootSafeArea = RNSafeArea.rootSafeArea || { top: 0, left: 0, bottom: 0, right: 0 };
 
 addRootSafeAreaListener((result) => {
   rootSafeArea = result;
