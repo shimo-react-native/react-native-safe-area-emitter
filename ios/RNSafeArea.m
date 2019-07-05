@@ -38,7 +38,7 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self) {
         _statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);;
-        _rootSafeAreaInsets = UIEdgeInsetsZero;
+        _rootSafeAreaInsets = UIEdgeInsetsMake(_statusBarHeight, 0, 0, 0);
     }
     return self;
 }
@@ -96,6 +96,7 @@ RCT_REMAP_METHOD(getSafeArea,
                                                      name:UIApplicationDidChangeStatusBarFrameNotification
                                                    object:nil];
     }
+    [self sendRootSafeAreaEvent];
 }
 
 - (void)stopObserving {
