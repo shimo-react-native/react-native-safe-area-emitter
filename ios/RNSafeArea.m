@@ -95,8 +95,8 @@ RCT_REMAP_METHOD(getSafeArea,
                                                  selector:@selector(applicationDidChangeStatusBarFrame:)
                                                      name:UIApplicationDidChangeStatusBarFrameNotification
                                                    object:nil];
-        [self sendRootSafeAreaEvent];
     }
+    [self sendRootSafeAreaEvent];
 }
 
 - (void)stopObserving {
