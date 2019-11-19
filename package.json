@@ -1,6 +1,6 @@
 {
   "name": "react-native-safe-area-emitter",
-  "version": "0.1.11",
+  "version": "1.0.0",
   "description": "Safe area emitter of iOS for react-native",
   "main": "index.js",
   "scripts": {
@@ -23,5 +23,5 @@
   "bugs": {
     "url": "https://github.com/shimohq/react-native-safe-area-emitter/issues"
   },
-  "homepage": "https://github.com/shimohq/react-native-safe-area-emitter#readme"
+  "homepage": "https://github.com/shimohq/react-native-safe-area-emitter"
 }
