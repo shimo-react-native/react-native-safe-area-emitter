@@ -1,6 +1,6 @@
 {
   "name": "react-native-safe-area-emitter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Safe area emitter of iOS for react-native",
   "main": "index.js",
   "repository": {
