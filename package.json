@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Safe area emitter of iOS for react-native",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shimohq/react-native-safe-area-emitter.git"
