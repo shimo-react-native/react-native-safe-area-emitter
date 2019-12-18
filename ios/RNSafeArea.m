@@ -25,7 +25,7 @@ static NSString *const RNRootSafeAreaEventName = @"RootSafeAreaEvent";
     UIEdgeInsets _rootSafeAreaInsets;
 }
 
-@property (nonatomic, strong) UIView *rootView;
+@property (nonatomic, readonly) UIView *rootView;
 
 @end
 
@@ -156,16 +156,14 @@ RCT_REMAP_METHOD(getSafeArea,
 #pragma mark - Getter
 
 - (UIView *)rootView {
-    if (!_rootView) {
-        UIWindow *window = RCTSharedApplication().keyWindow;
-        if (window) {
-            UIViewController *rootViewController = window.rootViewController;
-            if (rootViewController) {
-                _rootView = rootViewController.view;
-            }
+    UIWindow *window = RCTSharedApplication().keyWindow;
+    if (window) {
+        UIViewController *rootViewController = window.rootViewController;
+        if (rootViewController) {
+            return rootViewController.view;
         }
     }
-    return _rootView;
+    return nil;
 }
 
 #pragma mark - Private
