@@ -26,16 +26,27 @@ static NSString *const RNRootSafeAreaEventName = @"RootSafeAreaEvent";
 }
 
 @property (nonatomic, readonly) UIView *rootView;
-
+@property (strong, nonatomic) UIWindow *mainWindow;
 @end
 
 @implementation RNSafeArea
-
+@synthesize mainWindow = _mainWindow;
 RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup
 {
     return YES;
+}
+
+- (void)setMainWindow:(UIWindow *)window {
+    _mainWindow = window;
+}
+
+- (UIWindow *)mainWindow {
+    if (!_mainWindow) {
+        _mainWindow = RCTSharedApplication().keyWindow;
+    }
+    return _mainWindow;
 }
 
 - (instancetype)init
@@ -133,6 +144,10 @@ RCT_REMAP_METHOD(getSafeArea,
 
 - (void)safeAreaInsetsDidChange:(NSNotification *)notification {
     UIView *view = (UIView *)notification.object;
+    if (view.window != self.mainWindow) { // fix多窗口高度错乱
+        return;
+    }
+    
     if ([view isKindOfClass:[RCTRootView class]] && _listenRootSafeArea) {
         _rootSafeAreaInsets = [self getSafeAreaInsetsForView:view];
         [self sendRootSafeAreaEvent];
@@ -156,7 +171,8 @@ RCT_REMAP_METHOD(getSafeArea,
 #pragma mark - Getter
 
 - (UIView *)rootView {
-    UIWindow *window = RCTSharedApplication().keyWindow;
+    UIWindow *window = self.mainWindow;
+    
     if (window) {
         UIViewController *rootViewController = window.rootViewController;
         if (rootViewController) {

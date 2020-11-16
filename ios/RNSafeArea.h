@@ -9,5 +9,5 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RNSafeArea : RCTEventEmitter
-
+- (void)setMainWindow:(UIWindow *)window;
 @end
