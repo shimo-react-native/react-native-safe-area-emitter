@@ -30,7 +30,7 @@ static NSString *const RNRootSafeAreaEventName = @"RootSafeAreaEvent";
 @end
 
 @implementation RNSafeArea
-
+@synthesize mainWindow = _mainWindow;
 RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup
@@ -40,6 +40,13 @@ RCT_EXPORT_MODULE();
 
 - (void)setMainWindow:(UIWindow *)window {
     _mainWindow = window;
+}
+
+- (UIWindow *)mainWindow {
+    if (!_mainWindow) {
+        _mainWindow = RCTSharedApplication().keyWindow;
+    }
+    return _mainWindow;
 }
 
 - (instancetype)init
@@ -137,7 +144,7 @@ RCT_REMAP_METHOD(getSafeArea,
 
 - (void)safeAreaInsetsDidChange:(NSNotification *)notification {
     UIView *view = (UIView *)notification.object;
-    if (view != self.rootView) { // fix多窗口高度错乱
+    if ([view isKindOfClass:[RCTRootView class]] && view == self.rootView && _listenRootSafeArea) { // fix多窗口高度错乱
         return;
     }
     
