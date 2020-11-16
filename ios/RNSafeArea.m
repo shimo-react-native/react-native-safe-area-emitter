@@ -144,7 +144,7 @@ RCT_REMAP_METHOD(getSafeArea,
 
 - (void)safeAreaInsetsDidChange:(NSNotification *)notification {
     UIView *view = (UIView *)notification.object;
-    if (view.window != _mainWindow) { // fix多窗口高度错乱
+    if (view.window != self.mainWindow) { // fix多窗口高度错乱
         return;
     }
     
